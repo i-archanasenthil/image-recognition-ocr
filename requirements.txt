@@ -2,3 +2,4 @@ transformers
 torchvision
 torchaudio
 pillow
+easyocr
