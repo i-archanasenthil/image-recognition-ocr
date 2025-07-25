@@ -31,14 +31,21 @@ def extract_invoice_data(text: str) -> dict:
     else:
         fields["invoice_number"] = 'Not found' 
 
-    match = re.search(r'invoice date\s*(\d{1,2})[\s/-]?(\d{4})', text, re.IGNORECASE)
+    match = re.search( r'(\d{1,2})[\s/-]?(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)[\s/-]?(\d{4})', text, re.IGNORECASE)
     if match:
-        fields["date"] = f"{match.group(1)}/{match.group(2)}" 
+        fields["date"] = f"{match.group(1)}/{match.group(2)}/{match.group(3)}" 
 
-    match = re.search(r'total\s*\$?([sS]?\d{1,3}(?:,\d{3})*(?:\.\d{2})?)', text, re.IGNORECASE)
+    match = re.findall(r'total\s*\$?([sS]?\d{1,3}(?:,\d{3})*(?:\.\d{2})?)', text, re.IGNORECASE)
+    for i, mat in enumerate(match, 1):
+        print(f"{i} : {mat}")
     
-    if match:
-        fields["total"] = match.group(1).replace('S', '$').replace('s', '$') 
+    if len(match) >= 2:
+        fields["total"] = match[1]
+    elif match:
+        fields["total"] = match[0]
+    else:
+        fields["total"] = 'Not found' 
+
 
     return fields
 
